@@ -8,7 +8,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 
-//   getting data
+//   Getting data
 d3.json('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson').then(({ features }) => {
 
 
@@ -24,14 +24,33 @@ d3.json('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geoj
     })
 });
 
+// Getting colours for markers
 const getColor = depth => {
     switch (true) {
         case depth > 90:
             return 'red';
         case depth > 70 && depth <= 85:
             return 'orange';
-        default:
-            return "green";
-    };
-
+        case depth >50 && depth <= 70:
+            return 'amber';
+        case depth >30 && depth <= 50:
+            return 'yellow';
+        case depth > 10 && depth <= 30:
+            return 'brightgreen';
+        case depth>-10 && depth <=10:
+            return '#7CFC00';
+            };
 }
+
+// Adding legend
+var legend = L.control({position: 'bottomright'});
+legend.onAdd = function (map) {
+    var div = L.DomUtil.create('div', 'info legend'),
+grades = [-10,10,30,50,70,90];
+for (var i = 0; i < grades.length; i++) {
+    div.innerHTML += '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' + grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');}
+    return div;
+    };
+    legend.addTo(map);
+
+  
